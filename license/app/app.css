@@ -124,6 +124,15 @@ body{
     color: #fbfbd0;
 }
 
+#eb_lic_id {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 1.5rem;
+    direction: ltr;
+    padding: 0.3rem;
+}
+
 #eb_register_family_name{
     text-align: right;
     direction: rtl;
@@ -148,10 +157,7 @@ body{
     font-size: 1.5rem;
     direction: ltr;
     text-align: left;
-    padding: 0.3rem;
-    border-radius: 8px;
-    border: 2px gray solid;
-    box-shadow: 2px 2px 2px white;
+    padding: 0.5em;
 }
 
 /* #eb_login {
@@ -171,7 +177,7 @@ body{
     background-repeat: no-repeat;
     background-size: contain;
     /* border-radius: 10rem; */
-    background-position: center;
+    background-position: center 0;
     /* display: inline-block; */
     /* box-shadow: 0 8px 11px grey; */
     position: absolute;
