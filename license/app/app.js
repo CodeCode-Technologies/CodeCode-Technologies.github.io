@@ -73,26 +73,8 @@ var js = {
 
 var app = {
     dat:{
-        srv_url: 'https://script.google.com/macros/s/AKfycbw9iVdg5gGV0OzF_KOMDVjFZkL-HrIMd9vjiF7vsO-1dNcs0eRx_L5-g9D4rMEMGDjMTQ/exec',
-        server_load_response: null,
-        campaign_id: null,
-        user:null,
-        campaign_list:null,
-        activity_list:[],
-        signup_list:[],
-        private_list:[],
-        user_goal:0,
-        initial_signup_list:[],
-        initial_private_list:[],
-        mandatory_activity_list:[],
-        mode:null,
-        login_mode:"LOGIN",
-        idx:{
-            activity_list:{},
-            activity_groups:{},
-            group_by_activity:{},
-            campaign_by_id:{}
-        }
+        srv_url: 'https://script.google.com/macros/s/AKfycbx6GWi2M9VUUJ3EbPG5OqzTCb1-g_3m1Kx0L-rl6awKTsQwKQVCy7mR_Q-9l4WFCUJ0vg/exec',
+        account: null
     },
     is_mobile: false,
     please_wait:(visible)=>{
@@ -214,14 +196,93 @@ var app = {
             app.navigator.navigateTo(home_page);
         }
     },
-
+    open_activate_page:()=>{
+        // app.navigator.navigateTo("activate");
+        // return;
+        const licID = $("#eb_lic_id").val().trim();
+        if (!licID || licID == '') {
+            app.pop_err('נא למלא מזהה חשבון');
+            return;
+        }
+        app.post(
+            {
+                act_id: "get_license",
+                user: {
+                    userEmail : "menikupfer@gmail.com",
+                    userCode : "123456"
+                },
+                license : {
+                    LicenseID : licID
+                }
+            },
+            {
+                on_success:(response)=>{
+                    app.dat.license = response;
+                    app.fill_lic_info("activate")
+                    app.navigator.navigateTo("activate");
+                    console.log(response);
+                },
+                on_error_response:(error)=>{
+                      app.pop_err(error.msg);
+                 }
+            }
+        );
+    },
+    lic_activate:()=>{
+        const qty = parseInt($("#eb_activate_qty").val().trim());
+        if (!qty || qty == '') {
+            app.pop_err('נא למלא מס\' רשיונות להפעלה');
+            return;
+        }
+        const code = $("#eb_activate_code").val().trim();
+        if (!code || code == '') {
+            app.pop_err('נא למלא קוד הפעלה');
+            return;
+        }
+        if (app.dat.license.Activated + qty > app.dat.license.Package) {
+            app.pop_err('חריגה מחבילת הרשיונות');
+            return;
+        }
+        app.post(
+            {
+                act_id: "upd_license",
+                user: {
+                    userEmail : "menikupfer@gmail.com",
+                    userCode : "123456"
+                },
+                license : {
+                    LicenseID : licID
+                }
+            },
+            {
+                on_success:(response)=>{
+                    app.dat.license = response;
+                    app.fill_lic_info("activate")
+                    app.navigator.navigateTo("activate");
+                    console.log(response);
+                },
+                on_error_response:(error)=>{
+                      app.pop_err(error.msg);
+                 }
+            }
+        );
+    },
+    fill_lic_info:(page)=>{
+        const fill_field = (fieldName)=>{$(`#info_${page}_${fieldName}`).html(app.dat.license[fieldName])}
+        fill_field('LicenseID');
+        fill_field('CustomerName');
+        fill_field('Package');
+        fill_field('Activated');
+        fill_field('Expire');
+    },
     init_buttons: ()=>{
         $("#frm_login").submit((e)=>{
             e.preventDefault(e);
             app.login();
-        });        $("#bt_logout").click(app.logout);
+        });        
         $("#mi_logout").click(app.logout);
-        $("#mi_lic_activate").click(()=>{app.navigator.navigateTo("activate")});
+        $("#mi_lic_activate").click(app.open_activate_page);
+        $("#bt_lic_activate").click(app.lic_activate);
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");

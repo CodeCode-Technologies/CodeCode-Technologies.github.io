@@ -170,11 +170,26 @@ body{
     left: 0;
     top: 50%;
     transform: translateY(-50%);
+    text-align: left;
 }
 
 #dv_activate_input {
     position: relative;
     padding-left: 7rem;
+}
+
+#dv_activate_code {
+    position: relative;
+    padding-left: 16rem;
+}
+
+#eb_activate_code{
+    width: 16rem;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: left;
 }
 
 #bt_lic_activate{
@@ -207,7 +222,7 @@ body{
 }
 
 .eb_cell{
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     padding: 0.5em;
     width: 100%;
     box-sizing: border-box;
