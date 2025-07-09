@@ -136,7 +136,7 @@ body{
 }
 
 .tb_info td>div{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
 }
 
 .tb_info td>div:nth-child(1){
@@ -173,8 +173,8 @@ body{
 }
 
 #dv_activate_input {
-    line-height: 3em;
     position: relative;
+    padding-left: 7rem;
 }
 
 #bt_lic_activate{
