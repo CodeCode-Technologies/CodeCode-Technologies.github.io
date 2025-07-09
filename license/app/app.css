@@ -101,6 +101,7 @@ body{
 
 .page table td{
     position: relative;
+    padding: 0.5rem;
 }
 
 #dv_main_menu input[type=button] {
@@ -115,7 +116,7 @@ body{
     display: inline-block;
     /* margin: 2rem 0 1rem 0; */
     width: 100%;
-    margin: 0.5em;
+    /* margin: 0.5em; */
 }
 
 
@@ -165,7 +166,7 @@ body{
 
 #dv_login_logo {
     background-image: url(../img/codecode_logo.png);
-    height: 10rem;
+    height: 8rem;
     /* width: 10rem; */
     background-repeat: no-repeat;
     background-size: contain;
@@ -180,6 +181,7 @@ body{
     /* left: 0; */
     position: relative;
 }
+
 #bt_login {
     font-size: 1.5rem;
     border-radius: 8px;
