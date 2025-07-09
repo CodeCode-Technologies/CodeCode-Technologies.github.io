@@ -165,12 +165,14 @@ var app = {
         }
     },
     login:()=>{
-        $(".page").hide();
-        $("#dv_main_menu").show();
+        window.localStorage.setObj("license-user", {name:"demo_user"});
+        app.init_user();
+        app.navigator.home();
     },
     logout:()=>{
-        $(".page").hide();
-        $("#dv_login").show();
+        app.clear_storage();
+        app.init_user();
+        app.navigator.home();
     },
     rebuild:(response)=>{
         app.on_after_rebuild?.call();
@@ -183,12 +185,43 @@ var app = {
     clear_storage:()=>{
         window.localStorage.setObj("license-user", null);
     },
+    navigator:{
+        init:()=>{
+            // Handle back/forward navigation
+            window.onpopstate = function(event) {
+                const sectionId = (event.state && event.state.section) || 'login';
+                app.navigator.showSection(sectionId);
+            };
+
+            // Load correct section on initial load (e.g., via direct link or refresh)
+            window.onload = function() {
+                const sectionId = location.hash.replace('#', '') || 'login';
+                app.navigator.showSection(sectionId);
+                // Ensure history state is initialized
+                history.replaceState({ section: sectionId }, '', `#${sectionId}`);
+            };
+        },
+        showSection : (sectionId) => {
+            $(".page").hide();
+            $("#" + sectionId).css('display','flex');
+        },
+        navigateTo : (sectionId)=> {
+            app.navigator.showSection(sectionId);
+            history.pushState({ section: sectionId }, '', `#${sectionId}`);
+        },
+        home:()=>{
+            const home_page = (app.dat.user) ? "main_menu" : "login";
+            app.navigator.navigateTo(home_page);
+        }
+    },
+
     init_buttons: ()=>{
         $("#frm_login").submit((e)=>{
             e.preventDefault(e);
             app.login();
-        });
-        $("#bt_logout").click(app.logout)
+        });        $("#bt_logout").click(app.logout);
+        $("#mi_logout").click(app.logout);
+        $("#mi_lic_activate").click(()=>{app.navigator.navigateTo("activate")});
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");
@@ -198,15 +231,15 @@ var app = {
         $("#dv_screen_message_txt").html(msg);
     },
     init: ()=>{
+        app.navigator.init();
         app.init_buttons();
         app.init_user();
-        $(".page").hide();
         $("body").show();
-        $("#dv_login").show();
+        app.navigator.home();
     },
     start: ()=>{
         app.init();
     }
 }
 
-$(app.start)
+$(app.start);

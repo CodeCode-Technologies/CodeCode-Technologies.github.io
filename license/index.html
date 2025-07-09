@@ -19,7 +19,7 @@
         <div><div id="dv_screen_message_logo"></div></div>
         <div id="dv_screen_message_txt"></div>
     </div></div>
-    <div id="dv_login" class="page">
+    <div id="login" class="page">
         <form id="frm_login"><table>
             <tr><td>
                 <div id="dv_login_logo"></div>
@@ -35,7 +35,7 @@
     </div>
 	<div id="mask_div"></div>
 	<div id="mask_dialog"></div>
-    <div id="dv_main_menu" class="page">
+    <div id="main_menu" class="page">
         <table>
             <tr><td>
                 <div id="dv_login_logo"></div>
@@ -44,16 +44,44 @@
                 <input id="eb_lic_id" class="eb_cell" type="text" placeholder="מזהה חשבון">
             </td></tr>
             <tr><td>
-                <input id="bt_lic_activate" type="button" value="אקטיבציה">
+                <input id="mi_lic_activate" type="button" value="אקטיבציה">
             </td></tr>
             <tr><td>
-                <input id="bt_lic_deactivate" type="button" value="זיכוי">
+                <input id="mi_lic_deactivate" type="button" value="זיכוי">
             </td></tr>
             <tr><td>
-                <input id="bt_account_add" type="button" value="עסקה חדשה">
+                <input id="mi_account_add" type="button" value="עסקה חדשה">
             </td></tr>
             <tr><td>
-                <input id="bt_logout" type="button" value="יציאה">
+                <input id="mi_logout" type="button" value="יציאה">
+            </td></tr>
+        </table>
+    </div>    
+    <div id="activate" class="page">
+        <table class="tb_info">
+            <tr><td>
+                <div>מזהה חשבון:</div>
+                <div>123456</div>
+            </td></tr>
+            <tr><td>
+                <div>שם לקוח:</div>
+                <div>אלכסנדר בוחבוט</div>
+            </td></tr>
+            <tr><td>
+                <div>חבילת רשיונות:</div>
+                <div>100</div>
+            </td></tr>
+            <tr><td>
+                <div>רשיונות פעילים:</div>
+                <div>50</div>
+            </td></tr>
+            <tr><td>
+                <div>בתוקף עד:</div>
+                <div>12/12/2026</div>
+            </td></tr>
+            <tr><td>
+                <div id="dv_activate_input">מס' רשיונות להפעלה: <input class="eb_cell" id="eb_activate_qty" type="number" type="number" min="1" max="9999"></div>
+                <input id="bt_lic_activate" class="bt_form_act" type="button" value="הפעל">
             </td></tr>
         </table>
     </div>    

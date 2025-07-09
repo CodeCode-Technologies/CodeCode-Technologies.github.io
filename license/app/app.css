@@ -90,7 +90,7 @@ body{
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: gainsboro;    
+    padding: 2rem;
 }
 
 .page table {
@@ -105,7 +105,7 @@ body{
     padding: 0.5rem;
 }
 
-#dv_main_menu input[type=button] {
+#main_menu input[type=button] {
     font-size: 1.5rem;
     border-radius: 8px;
     background-color: #2f4f4f;
@@ -121,7 +121,7 @@ body{
 }
 
 
-#dv_main_menu input[type=button]:hover{
+#main_menu input[type=button]:hover{
     color: #fbfbd0;
 }
 
@@ -129,6 +129,62 @@ body{
     text-align: center;
     direction: ltr;
 }
+
+.page table.tb_info{
+    width: 100%;
+    padding: 0;
+}
+
+.tb_info td>div{
+    font-size: 1.5rem;
+}
+
+.tb_info td>div:nth-child(1){
+    text-align: right;
+}
+
+.tb_info td>div:nth-child(2) {
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px black dotted;
+    padding-bottom: 0.5em;
+    padding-top: 0.5em;
+}
+
+.bt_form_act {
+    font-size: 1.5rem;
+    border-radius: 8px;
+    background-color: #2f4f4f;
+    color: white;
+    padding: 1rem 1rem;
+    cursor: pointer;
+    border: 1px white solid;
+    box-shadow: 0px 0px 20px white;
+    display: inline-block;
+    width: 100%;
+ }
+
+#eb_activate_qty {
+    width: 6rem;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#dv_activate_input {
+    line-height: 3em;
+    position: relative;
+}
+
+#bt_lic_activate{
+    margin-top: 2rem;
+}
+
+#activate{
+    align-items: flex-start;
+}
+
 
 #eb_register_family_name{
     text-align: right;
