@@ -96,6 +96,7 @@ body{
     padding:1rem;
     background-color: #ffffffa6;
     border-radius: 2rem;
+    min-width: 20rem;
 }
 
 .page table td{
