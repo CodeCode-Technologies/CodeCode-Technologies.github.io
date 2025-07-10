@@ -164,7 +164,7 @@ body{
     width: 100%;
  }
 
-#eb_activate_qty {
+#eb_activate_qty,#eb_deactivate_qty {
     width: 6rem;
     position: absolute;
     left: 0;
@@ -173,17 +173,17 @@ body{
     text-align: left;
 }
 
-#dv_activate_input {
+#dv_activate_input,#dv_deactivate_input {
     position: relative;
     padding-left: 7rem;
 }
 
-#dv_activate_code {
+#dv_activate_code,#dv_deactivate_code {
     position: relative;
-    padding-left: 16rem;
+    padding-left: 17rem;
 }
 
-#eb_activate_code{
+#eb_activate_code,#eb_deactivate_code{
     width: 16rem;
     position: absolute;
     left: 0;
@@ -192,7 +192,18 @@ body{
     text-align: left;
 }
 
-#bt_lic_activate{
+#activate_pwd {
+    font-weight: bolder;
+    background-color: yellow;
+    display: inline-block;
+    margin: 1rem;
+    padding: 1rem;
+    font-size: x-large;
+    box-shadow: 5px 5px 10px;
+    border-radius: 8px;
+}
+
+#bt_lic_activate,#bt_lic_deactivate{
     margin-top: 2rem;
 }
 

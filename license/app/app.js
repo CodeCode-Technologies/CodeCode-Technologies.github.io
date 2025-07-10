@@ -228,24 +228,17 @@ var app = {
             }
         );
     },
-    lic_activate:()=>{
-        const qty = parseInt($("#eb_activate_qty").val().trim());
-        if (!qty || qty == '') {
-            app.pop_err('נא למלא מס\' רשיונות להפעלה');
-            return;
-        }
-        const code = $("#eb_activate_code").val().trim();
-        if (!code || code == '') {
-            app.pop_err('נא למלא קוד הפעלה');
-            return;
-        }
-        if (app.dat.license.Activated + qty > app.dat.license.Package) {
-            app.pop_err('חריגה מחבילת הרשיונות');
+    open_deactivate_page:()=>{
+        // app.navigator.navigateTo("activate");
+        // return;
+        const licID = $("#eb_lic_id").val().trim();
+        if (!licID || licID == '') {
+            app.pop_err('נא למלא מזהה חשבון');
             return;
         }
         app.post(
             {
-                act_id: "upd_license",
+                act_id: "get_license",
                 user: {
                     userEmail : "menikupfer@gmail.com",
                     userCode : "123456"
@@ -257,8 +250,59 @@ var app = {
             {
                 on_success:(response)=>{
                     app.dat.license = response;
-                    app.fill_lic_info("activate")
-                    app.navigator.navigateTo("activate");
+                    app.fill_lic_info("deactivate")
+                    app.navigator.navigateTo("deactivate");
+                    console.log(response);
+                },
+                on_error_response:(error)=>{
+                      app.pop_err(error.msg);
+                 }
+            }
+        );
+    },
+    lic_activate:(deactivate)=>{
+        const qty = (deactivate)?
+            - parseInt($("#eb_deactivate_qty").val().trim()) :
+            parseInt($("#eb_activate_qty").val().trim());
+        if (!qty || qty == '') {
+            app.pop_err('נא למלא מס\' רשיונות להפעלה');
+            return;
+        }
+        const code = ((deactivate)) ?
+            $("#eb_deactivate_code").val().trim() :
+            $("#eb_activate_code").val().trim();
+        if (!code || code == '') {
+            app.pop_err('נא למלא קוד הפעלה');
+            return;
+        }
+        if (app.dat.license.Activated + qty > app.dat.license.Package) {
+            app.pop_err('חריגה מחבילת הרשיונות');
+            return;
+        }
+        if (app.dat.license.Activated + qty < 0) {
+            app.pop_err('חריגה מחבילת הרשיונות');
+            return;
+        }
+        app.post(
+            {
+                act_id: "activate_license",
+                user: {
+                    userEmail : "menikupfer@gmail.com",
+                    userCode : "123456"
+                },
+                license : {
+                    LicenseID : app.dat.license.LicenseID,
+                    activate_qty : qty,
+                    activate_code : code
+                }
+            },
+            {
+                on_success:(response)=>{
+                    app.dat.license = response;
+                    var msg = 'הפעולה עברה בהצלחה';
+                    if (!deactivate) msg += `<div>סיסמת הפעלה: <div id="activate_pwd">${app.dat.license.pwd}</div></div>`;
+                    app.pop_success(msg);
+                    app.navigator.home();
                     console.log(response);
                 },
                 on_error_response:(error)=>{
@@ -282,7 +326,9 @@ var app = {
         });        
         $("#mi_logout").click(app.logout);
         $("#mi_lic_activate").click(app.open_activate_page);
-        $("#bt_lic_activate").click(app.lic_activate);
+        $("#mi_lic_deactivate").click(app.open_deactivate_page);
+        $("#bt_lic_activate").click(()=>{app.lic_activate(false)});
+        $("#bt_lic_deactivate").click(()=>{app.lic_activate(true)});
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");
