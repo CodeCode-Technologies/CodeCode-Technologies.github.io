@@ -337,10 +337,10 @@ QR_activate: () => {
                 return;
             }
 
-            const cameraId = cameras[0].id;
+            // const cameraId = cameras[0].id;
 
             html5QrCode.start(
-                cameraId,
+                { facingMode: "environment" },
                 {
                     fps: 10,
                     qrbox: 250
