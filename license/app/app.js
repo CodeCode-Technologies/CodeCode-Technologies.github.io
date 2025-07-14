@@ -319,6 +319,35 @@ var app = {
         fill_field('Activated');
         fill_field('Expire');
     },
+    QR_activate:()=>{
+        $("#reader").show();
+        Html5Qrcode.getCameras().then(cameras => {
+        if (cameras && cameras.length) {
+            const cameraId = cameras[0].id;
+
+            html5QrCode.start(
+            cameraId,
+            {
+                fps: 10,
+                qrbox: 250
+            },
+            (decodedText) => {
+                $("#eb_activate_code").val(qrInput.value);
+                html5QrCode.stop().then(() => {
+                $("#reader").hide();
+                });
+            },
+            (errorMessage) => {
+                // Optional: handle scan errors here
+                console.warn(`QR Error: ${errorMessage}`);
+            }
+            );
+        }
+        }).catch(err => {
+        alert("Camera not accessible or permission denied.");
+        console.error(err);
+        });
+     },
     init_buttons: ()=>{
         $("#frm_login").submit((e)=>{
             e.preventDefault(e);
@@ -329,6 +358,7 @@ var app = {
         $("#mi_lic_deactivate").click(app.open_deactivate_page);
         $("#bt_lic_activate").click(()=>{app.lic_activate(false)});
         $("#bt_lic_deactivate").click(()=>{app.lic_activate(true)});
+        $("#bt_QR_activate").click(app.QR_activate);
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");

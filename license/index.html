@@ -13,8 +13,10 @@
     <script src="lib/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="app/app.css">
     <script src="app/app.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
+    <div id="reader"></div>
     <div id="dv_screen_message"><div>
         <div><div id="dv_screen_message_logo"></div></div>
         <div id="dv_screen_message_txt"></div>
@@ -57,71 +59,78 @@
             </td></tr>
         </table>
     </div>    
-    <div id="activate" class="page">
-        <table class="tb_info">
-            <tr><td>
-                <div>מזהה חשבון:</div>
-                <div id="info_activate_LicenseID">123456</div>
-            </td></tr>
-            <tr><td>
-                <div>שם לקוח:</div>
-                <div id="info_activate_CustomerName">אלכסנדר בוחבוט</div>
-            </td></tr>
-            <tr><td>
-                <div>חבילת רשיונות:</div>
-                <div id="info_activate_Package">100</div>
-            </td></tr>
-            <tr><td>
-                <div>רשיונות פעילים:</div>
-                <div id="info_activate_Activated">50</div>
-            </td></tr>
-            <tr><td>
-                <div>בתוקף עד:</div>
-                <div id="info_activate_Expire">12/12/2026</div>
-            </td></tr>
-            <tr><td style="padding-top: 2rem;padding-bottom: 2rem;">
-                <div id="dv_activate_input">מס' רשיונות להפעלה: <input class="eb_cell" id="eb_activate_qty" type="number"  min="1" max="9999"></div>
-             </td></tr>
-            <tr><td >
-                <div id="dv_activate_code">קוד הפעלה: <input class="eb_cell" id="eb_activate_code" type="text"></div>
-           </td></tr>
-            <tr><td>
-                <input id="bt_lic_activate" class="bt_form_act" type="button" value="הפעל">
-            </td></tr>
-        </table>
+    <div id="activate" class="page upPage">
+        <div class="info-cell-container">
+            <div class="info-cell-title">מזהה חשבון:</div>
+            <div id="info_activate_LicenseID" class="info-cell-value">123456</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">שם לקוח:</div>
+            <div id="info_activate_CustomerName" class="info-cell-value">אלכסנדר בוחבוט</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">חבילת רשיונות:</div>
+            <div id="info_activate_Package" class="info-cell-value">120</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">רשיונות פעילים:</div>
+            <div id="info_activate_Activated" class="info-cell-value">20</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">בתוקף עד:</div>
+            <div id="info_activate_Expire" class="info-cell-value">12/10/20205</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">מס' תחנה:</div>
+            <div id="dv_activate_station" class="info-cell-value"><input class="eb_cell" id="eb_activate_station" type="number"  min="1" max="9999"></div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">מס' רשיונות להפעלה:</div>
+            <div id="dv_activate_input" class="info-cell-value"><input class="eb_cell" id="eb_activate_qty" type="number"  min="1" max="9999"></div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">קוד הפעלה:&nbsp;&nbsp;</div>
+            <div id="dv_activate_code" class="info-cell-value"><input class="eb_cell" id="eb_activate_code" type="text"></div>
+        </div>
+        <div>
+            <input id="bt_QR_activate" class="bt_form_act" type="button" value="QR">
+            <input id="bt_lic_activate" class="bt_form_act" type="button" value="הפעל">
+        </div>
     </div>    
-    <div id="deactivate" class="page">
-        <table class="tb_info">
-            <tr><td>
-                <div>מזהה חשבון:</div>
-                <div id="info_deactivate_LicenseID">123456</div>
-            </td></tr>
-            <tr><td>
-                <div>שם לקוח:</div>
-                <div id="info_deactivate_CustomerName">אלכסנדר בוחבוט</div>
-            </td></tr>
-            <tr><td>
-                <div>חבילת רשיונות:</div>
-                <div id="info_deactivate_Package">100</div>
-            </td></tr>
-            <tr><td>
-                <div>רשיונות פעילים:</div>
-                <div id="info_deactivate_Activated">50</div>
-            </td></tr>
-            <tr><td>
-                <div>בתוקף עד:</div>
-                <div id="info_deactivate_Expire">12/12/2026</div>
-            </td></tr>
-            <tr><td style="padding-top: 2rem;padding-bottom: 2rem;">
-                <div id="dv_deactivate_input">מס' רשיונות לזיכוי: <input class="eb_cell" id="eb_deactivate_qty" type="number"  min="1" max="9999"></div>
-             </td></tr>
-            <tr><td >
-                <div id="dv_deactivate_code">קוד הפעלה: <input class="eb_cell" id="eb_deactivate_code" type="text"></div>
-           </td></tr>
-            <tr><td>
-                <input id="bt_lic_deactivate" class="bt_form_act" type="button" value="זיכוי">
-            </td></tr>
-        </table>
+    <div id="deactivate" class="page upPage">
+        <div class="info-cell-container">
+            <div class="info-cell-title">מזהה חשבון:</div>
+            <div id="info_deactivate_LicenseID" class="info-cell-value">123456</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">שם לקוח:</div>
+            <div id="info_deactivate_CustomerName" class="info-cell-value">אלכסנדר בוחבוט</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">חבילת רשיונות:</div>
+            <div id="info_deactivate_Package" class="info-cell-value">120</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">רשיונות פעילים:</div>
+            <div id="info_deactivate_deactivated" class="info-cell-value">20</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">בתוקף עד:</div>
+            <div id="info_deactivate_Expire" class="info-cell-value">12/10/20205</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">מס' תחנה:</div>
+            <div id="dv_deactivate_station" class="info-cell-value"><input class="eb_cell" id="eb_deactivate_station" type="number"  min="1" max="9999"></div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">מס' רשיונות לזיכוי:</div>
+            <div id="dv_deactivate_input" class="info-cell-value"><input class="eb_cell" id="eb_deactivate_qty" type="number"  min="1" max="9999"></div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">קוד הפעלה:&nbsp;&nbsp;</div>
+            <div id="dv_deactivate_code" class="info-cell-value"><input class="eb_cell" id="eb_deactivate_code" type="text"></div>
+        </div>
+        <div><input id="bt_lic_deactivate" class="bt_form_act" type="button" value="זיכוי"></div>
     </div>    
 </body>
 </html>
