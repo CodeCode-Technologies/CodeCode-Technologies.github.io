@@ -319,35 +319,65 @@ var app = {
         fill_field('Activated');
         fill_field('Expire');
     },
-    QR_activate:()=>{
-        $("#reader").show();
+QR_activate: () => {
+    try {
+        // Navigate to QR reader screen
+        app.navigator.navigateTo("QR_reader");
+
+        const qrElement = document.getElementById("QRreader");
+        if (qrElement) {
+            qrElement.style.display = "block";
+        }
+
+        const html5QrCode = new Html5Qrcode("QRreader");
+
         Html5Qrcode.getCameras().then(cameras => {
-        if (cameras && cameras.length) {
+            if (!cameras || cameras.length === 0) {
+                alert("No camera found on this device.");
+                return;
+            }
+
             const cameraId = cameras[0].id;
 
             html5QrCode.start(
-            cameraId,
-            {
-                fps: 10,
-                qrbox: 250
-            },
-            (decodedText) => {
-                $("#eb_activate_code").val(qrInput.value);
-                html5QrCode.stop().then(() => {
-                $("#reader").hide();
-                });
-            },
-            (errorMessage) => {
-                // Optional: handle scan errors here
-                console.warn(`QR Error: ${errorMessage}`);
-            }
-            );
-        }
-        }).catch(err => {
-        alert("Camera not accessible or permission denied.");
-        console.error(err);
+                cameraId,
+                {
+                    fps: 10,
+                    qrbox: 250
+                },
+                (decodedText) => {
+                    // Fill scanned text into input
+                    $("#eb_activate_code").val(decodedText);
+
+                    // Stop the camera and hide scanner
+                    html5QrCode.stop().then(() => {
+                        $("#QRreader").hide();
+                        app.navigator.navigateTo("activate");
+                    }).catch(stopErr => {
+                        console.error("Failed to stop QR scanner:", stopErr);
+                        alert("Error stopping scanner. Please refresh.");
+                    });
+                },
+                (scanError) => {
+                    // Optional scan fail (e.g. no QR found in frame)
+                    console.warn("QR scan error:", scanError);
+                }
+            ).catch(startErr => {
+                // Starting the camera failed
+                console.error("Camera start error:", startErr);
+                alert("Unable to start camera. It may be in use by another app or blocked.");
+            });
+
+        }).catch(cameraErr => {
+            console.error("Camera access error:", cameraErr);
+            alert("Camera access failed. Please check browser permissions and try again.");
         });
-     },
+
+    } catch (generalErr) {
+        console.error("Unexpected QR init error:", generalErr);
+        alert("An unexpected error occurred while starting the QR scanner.");
+    }
+    },
     init_buttons: ()=>{
         $("#frm_login").submit((e)=>{
             e.preventDefault(e);

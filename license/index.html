@@ -13,10 +13,9 @@
     <script src="lib/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="app/app.css">
     <script src="app/app.js"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="lib/QR/html5-qrcode.min.js"></script>
 </head>
 <body>
-    <div id="reader"></div>
     <div id="dv_screen_message"><div>
         <div><div id="dv_screen_message_logo"></div></div>
         <div id="dv_screen_message_txt"></div>
@@ -131,6 +130,9 @@
             <div id="dv_deactivate_code" class="info-cell-value"><input class="eb_cell" id="eb_deactivate_code" type="text"></div>
         </div>
         <div><input id="bt_lic_deactivate" class="bt_form_act" type="button" value="זיכוי"></div>
+    </div>    
+    <div id="QR_reader" class="page upPage">
+        <div id="QRreader"></div>
     </div>    
 </body>
 </html>

@@ -196,6 +196,18 @@ body{
     justify-content: flex-start;
     padding: 0.8rem;
 }
+
+#QR_reader{
+    background-color: darkslategray; 
+}
+
+#QRreader {
+    z-index: 9999;
+    height: 100%;
+    width: 100%;
+    margin: 20%;
+}
+
 .info-cell-container {
     display: flex;
     justify-content: space-between;
