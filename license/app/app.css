@@ -190,6 +190,11 @@ body{
     margin: 1rem;
 }
 
+#bt_extend_expiry, #bt_extend_package {
+    width: 10rem;
+    margin: 1rem;
+}
+
 .upPage {
     align-items: center;
     flex-direction: column;

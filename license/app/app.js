@@ -100,6 +100,18 @@ var app = {
         var mail = `https://mail.google.com/mail/?view=cm&fs=1&body=${encodeURIComponent("An error has occurred at " + new Date() + "\n" + msg)}&to=codecode-technologies@gmail.com`;
         app.pop_err(`תקלה בביצוע הפעולה<div class="error_code">${mtml_msg}<div><a href="${mail}" target="_blank">Send</a></div></div>`, true);
     },
+    pop_are_you_sure:(msg, on_yes, title)=>{
+        swal.ok = false;
+        swal({
+            title: title || 'רגע...',
+            html: msg,
+            showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'כן', cancelButtonText: 'לא',
+            onAfterClose:()=>{if (swal.ok) on_yes?.call();}
+        }).then(function(result){
+            if (result.dismiss) return;
+            swal.ok = true;
+        });
+    },
     clean_google_sheet_array:(array, remove_header_row, null_empty_strings)=>{
         if (remove_header_row) array.shift();
         if (null_empty_strings) {
@@ -167,12 +179,45 @@ var app = {
     clear_storage:()=>{
         window.localStorage.setObj("license-user", null);
     },
+    pages:{
+        login: {
+            on_show:()=>{
+                app.dat.user = null;
+                app.clear_storage();
+                app.init_user();
+            }
+        },
+        main_menu: {
+            on_show:()=>{
+                app.dat.license = null;
+            },
+            invalid :()=> !app.dat.user
+        },
+        activate: {
+            before_show:()=>{
+                app.fill_lic_info("activate");
+                $("#eb_activate_station").val(1);
+                $("#eb_activate_qty").val('');
+                $("#eb_activate_code").val('');
+            },
+            invalid :()=> !app.dat.user || !app.dat.license
+        },
+        deactivate: {
+            before_show:()=>{
+                app.fill_lic_info("activate");
+                $("#eb_deactivate_station").val(1);
+                $("#eb_deactivate_qty").val('');
+                $("#eb_deactivate_code").val('');
+            },
+            invalid :()=> !app.dat.user || !app.dat.license
+        }
+    },
     navigator:{
         init:()=>{
             // Handle back/forward navigation
             window.onpopstate = function(event) {
                 const sectionId = (event.state && event.state.section) || 'login';
-                app.navigator.showSection(sectionId);
+                app.navigator.showSection(sectionId, true);
             };
 
             // Load correct section on initial load (e.g., via direct link or refresh)
@@ -183,14 +228,23 @@ var app = {
                 history.replaceState({ section: sectionId }, '', `#${sectionId}`);
             };
         },
-        showSection : (sectionId) => {
+        validate:(sectionId)=>{
+            if (!app.dat.user || app.pages[sectionId]?.invalid?.call()) {
+                app.navigator.home();
+            }
+        },
+        showSection : (sectionId, triggeredByHistory) => {
+            if (!triggeredByHistory) app.pages[sectionId]?.before_show?.call();
             $(".page").hide();
             $("#" + sectionId).css('display','flex');
-        },
+            app.pages[sectionId]?.on_show?.call();
+            if (!triggeredByHistory) app.pages[sectionId]?.after_show?.call();
+            if (triggeredByHistory) app.navigator.validate(sectionId);
+         },
         navigateTo : (sectionId)=> {
             app.navigator.showSection(sectionId);
             history.pushState({ section: sectionId }, '', `#${sectionId}`);
-        },
+       },
         home:()=>{
             const home_page = (app.dat.user) ? "main_menu" : "login";
             app.navigator.navigateTo(home_page);
@@ -218,7 +272,6 @@ var app = {
             {
                 on_success:(response)=>{
                     app.dat.license = response;
-                    app.fill_lic_info("activate")
                     app.navigator.navigateTo("activate");
                     console.log(response);
                 },
@@ -261,6 +314,13 @@ var app = {
         );
     },
     lic_activate:(deactivate)=>{
+        const station = (deactivate)?
+            parseInt($("#eb_deactivate_station").val().trim()) :
+            parseInt($("#eb_activate_station").val().trim());
+        if (!station || station == '') {
+            app.pop_err('נא למלא מס\' תחנה');
+            return;
+        }
         const qty = (deactivate)?
             - parseInt($("#eb_deactivate_qty").val().trim()) :
             parseInt($("#eb_activate_qty").val().trim());
@@ -292,17 +352,18 @@ var app = {
                 },
                 license : {
                     LicenseID : app.dat.license.LicenseID,
+                    activate_station : station,
                     activate_qty : qty,
                     activate_code : code
                 }
             },
             {
                 on_success:(response)=>{
-                    app.dat.license = response;
+                   app.dat.license = response;
                     var msg = 'הפעולה עברה בהצלחה';
                     if (!deactivate) msg += `<div>סיסמת הפעלה: <div id="activate_pwd">${app.dat.license.pwd}</div></div>`;
                     app.pop_success(msg);
-                    app.navigator.home();
+                    history.back();
                     console.log(response);
                 },
                 on_error_response:(error)=>{
@@ -319,64 +380,101 @@ var app = {
         fill_field('Activated');
         fill_field('Expire');
     },
-QR_activate: () => {
-    try {
-        // Navigate to QR reader screen
-        app.navigator.navigateTo("QR_reader");
-
-        const qrElement = document.getElementById("QRreader");
-        if (qrElement) {
-            qrElement.style.display = "block";
+    open_account: ()=>{
+        const licID = $("#eb_lic_id").val().trim();
+        if (!licID || licID == '') {
+            app.pop_err('נא למלא מזהה חשבון');
+            return;
         }
+        app.post(
+            {
+                act_id: "get_license",
+                user: {
+                    userEmail : "menikupfer@gmail.com",
+                    userCode : "123456"
+                },
+                license : {
+                    LicenseID : licID
+                }
+            },
+            {
+                on_success:(response)=>{
+                    app.dat.license = response;
+                    app.fill_lic_info("change_account")
+                    app.navigator.navigateTo("change_account");
+                    console.log(response);
+                },
+                on_error_response:(error)=>{
+                      app.pop_err(error.msg);
+                 }
+            }
+        );
+    },
+    QR_activate: () => {
+        try {
+            // Navigate to QR reader screen
+            app.navigator.navigateTo("QR_reader");
 
-        const html5QrCode = new Html5Qrcode("QRreader");
-
-        Html5Qrcode.getCameras().then(cameras => {
-            if (!cameras || cameras.length === 0) {
-                alert("No camera found on this device.");
-                return;
+            const qrElement = document.getElementById("QRreader");
+            if (qrElement) {
+                qrElement.style.display = "block";
             }
 
-            // const cameraId = cameras[0].id;
+            const html5QrCode = new Html5Qrcode("QRreader");
 
-            html5QrCode.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: 250
-                },
-                (decodedText) => {
-                    // Fill scanned text into input
-                    $("#eb_activate_code").val(decodedText);
-
-                    // Stop the camera and hide scanner
-                    html5QrCode.stop().then(() => {
-                        $("#QRreader").hide();
-                        app.navigator.navigateTo("activate");
-                    }).catch(stopErr => {
-                        console.error("Failed to stop QR scanner:", stopErr);
-                        alert("Error stopping scanner. Please refresh.");
-                    });
-                },
-                (scanError) => {
-                    // Optional scan fail (e.g. no QR found in frame)
-                    console.warn("QR scan error:", scanError);
+            Html5Qrcode.getCameras().then(cameras => {
+                if (!cameras || cameras.length === 0) {
+                    alert("No camera found on this device.");
+                    return;
                 }
-            ).catch(startErr => {
-                // Starting the camera failed
-                console.error("Camera start error:", startErr);
-                alert("Unable to start camera. It may be in use by another app or blocked.");
+
+                // const cameraId = cameras[0].id;
+
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: 250
+                    },
+                    (decodedText) => {
+                        // Fill scanned text into input
+                        $("#eb_activate_code").val(decodedText);
+                        $("#eb_deactivate_code").val(decodedText);
+
+                        // Stop the camera and hide scanner
+                        html5QrCode.stop().then(() => {
+                            $("#QRreader").hide();
+                            history.back();
+                        }).catch(stopErr => {
+                            console.error("Failed to stop QR scanner:", stopErr);
+                            alert("Error stopping scanner. Please refresh.");
+                        });
+                    },
+                    (scanError) => {
+                        // Optional scan fail (e.g. no QR found in frame)
+                        console.warn("QR scan error:", scanError);
+                    }
+                ).catch(startErr => {
+                    // Starting the camera failed
+                    console.error("Camera start error:", startErr);
+                    alert("Unable to start camera. It may be in use by another app or blocked.");
+                });
+
+            }).catch(cameraErr => {
+                console.error("Camera access error:", cameraErr);
+                alert("Camera access failed. Please check browser permissions and try again.");
             });
 
-        }).catch(cameraErr => {
-            console.error("Camera access error:", cameraErr);
-            alert("Camera access failed. Please check browser permissions and try again.");
-        });
+        } catch (generalErr) {
+            console.error("Unexpected QR init error:", generalErr);
+            alert("An unexpected error occurred while starting the QR scanner.");
+        }
+    },
+    extend_expiry : ()=>{
+        app.pop_are_you_sure('הפעולה תאריך את התוקף בשנה נוספת, עד --<br>להמשיך?');
+    },
+    extend_package : ()=>{
 
-    } catch (generalErr) {
-        console.error("Unexpected QR init error:", generalErr);
-        alert("An unexpected error occurred while starting the QR scanner.");
-    }
     },
     init_buttons: ()=>{
         $("#frm_login").submit((e)=>{
@@ -389,6 +487,10 @@ QR_activate: () => {
         $("#bt_lic_activate").click(()=>{app.lic_activate(false)});
         $("#bt_lic_deactivate").click(()=>{app.lic_activate(true)});
         $("#bt_QR_activate").click(app.QR_activate);
+        $("#bt_QR_deactivate").click(app.QR_activate);
+        $("#mi_account_add").click(app.open_account);
+        $("#bt_extend_expiry").click(app.extend_expiry);
+        $("#bt_extend_package").click(app.extend_packge);
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");

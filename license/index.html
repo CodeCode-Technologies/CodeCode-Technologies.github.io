@@ -51,7 +51,7 @@
                 <input id="mi_lic_deactivate" type="button" value="זיכוי">
             </td></tr>
             <tr><td>
-                <input id="mi_account_add" type="button" value="עסקה חדשה">
+                <input id="mi_account_add" type="button" value="נתוני עסקה">
             </td></tr>
             <tr><td>
                 <input id="mi_logout" type="button" value="יציאה">
@@ -129,7 +129,58 @@
             <div class="info-cell-title">קוד הפעלה:&nbsp;&nbsp;</div>
             <div id="dv_deactivate_code" class="info-cell-value"><input class="eb_cell" id="eb_deactivate_code" type="text"></div>
         </div>
-        <div><input id="bt_lic_deactivate" class="bt_form_act" type="button" value="זיכוי"></div>
+        <div>
+            <input id="bt_QR_deactivate" class="bt_form_act" type="button" value="QR">
+            <input id="bt_lic_deactivate" class="bt_form_act" type="button" value="זיכוי">
+        </div>
+    </div>    
+    <div id="new_account" class="page upPage">
+        <div class="info-cell-container">
+            <div class="info-cell-title">מזהה חשבון:</div>
+            <div id="info_new_account_LicenseID" class="info-cell-value">123456</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">שם לקוח:</div>
+            <div id="info_new_account_CustomerName" class="info-cell-value">אלכסנדר בוחבוט</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">חבילת רשיונות:</div>
+            <div id="info_new_account_Package" class="info-cell-value">120</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">רשיונות פעילים:</div>
+            <div id="info_new_account_Activated" class="info-cell-value">20</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">בתוקף עד:</div>
+            <div id="info_new_account_Expire" class="info-cell-value">12/10/20205</div>
+        </div>
+    </div>    
+    <div id="change_account" class="page upPage">
+        <div class="info-cell-container">
+            <div class="info-cell-title">מזהה חשבון:</div>
+            <div id="info_change_account_LicenseID" class="info-cell-value">123456</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">שם לקוח:</div>
+            <div id="info_change_account_CustomerName" class="info-cell-value">אלכסנדר בוחבוט</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">חבילת רשיונות:</div>
+            <div id="info_change_account_Package" class="info-cell-value">120</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">רשיונות פעילים:</div>
+            <div id="info_change_account_Activated" class="info-cell-value">20</div>
+        </div>
+        <div class="info-cell-container">
+            <div class="info-cell-title">בתוקף עד:</div>
+            <div id="info_change_account_Expire" class="info-cell-value">12/10/20205</div>
+        </div>
+        <div>
+            <input id="bt_extend_expiry" class="bt_form_act" type="button" value="הארך תוקף">
+            <input id="bt_extend_package" class="bt_form_act" type="button" value="הגדל חבילה">
+        </div>
     </div>    
     <div id="QR_reader" class="page upPage">
         <div id="QRreader"></div>
