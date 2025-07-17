@@ -248,7 +248,7 @@ var app = {
             before_show:()=>{
                 app.fill_lic_info("new_account");
                 $("#eb_new_account_CustomerName").val('');
-                $("#eeb_new_account_Package").val('');
+                $("#eb_new_account_Package").val('');
             },
             invalid :()=> !app.dat.user || !app.dat.license
         }
