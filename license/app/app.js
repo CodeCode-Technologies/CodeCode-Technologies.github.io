@@ -186,9 +186,61 @@ var app = {
         }
     },
     login:()=>{
-        window.localStorage.setObj("license-user", {name:"demo_user"});
-        app.init_user();
-        app.navigator.home();
+        const email = $("#eb_login").val().trim();
+        if (!email || email == '') {
+            app.pop_err('נא למלא כתובת אימייל');
+            return;
+        }
+        var otp = '';
+        var pop_otp = ()=> {
+            const html = 'בבקשה הקלד את הקוד שנשלח אליך למייל<br><input type=number id=eb_otp>';
+            var packageAddition = 0;
+            app.pop_form(html,()=>{
+                app.post(
+                    {
+                        act_id: "login",
+                        user: {
+                            UserEmail : email,
+                            UserCode : otp
+                        }
+                    },
+                    {
+                        on_success:(response)=>{
+                            window.localStorage.setObj("license-user", response);
+                            app.init_user();
+                            app.navigator.home();
+                        },                
+                        on_error_response:(error)=>{
+                            app.pop_err(error.msg);
+                        }
+                    }
+                );
+            },
+            ()=>{
+                otp = $("#eb_otp").val().trim();
+                if (!otp || otp =='') return "נא למלא את הקוד";
+            },'סיסמה חד פעמית');
+
+        };
+        var request = ()=> {
+            app.post(
+                {
+                    act_id: "login_request",
+                    user: {
+                        UserEmail : email
+                    }
+                },
+                {
+                    on_success:(response)=>{
+                        pop_otp();
+                    },                
+                    on_error_response:(error)=>{
+                        app.pop_err(error.msg);
+                    }
+                }
+            );
+        };
+        request();
     },
     logout:()=>{
         app.clear_storage();
@@ -302,10 +354,7 @@ var app = {
         app.post(
             {
                 act_id: "get_license",
-                user: {
-                    userEmail : "menikupfer@gmail.com",
-                    userCode : "123456"
-                },
+                user: app.dat.user,
                 license : {
                     LicenseID : licID
                 }
@@ -333,10 +382,7 @@ var app = {
         app.post(
             {
                 act_id: "get_license",
-                user: {
-                    userEmail : "menikupfer@gmail.com",
-                    userCode : "123456"
-                },
+                user: app.dat.user,
                 license : {
                     LicenseID : licID
                 }
@@ -387,10 +433,7 @@ var app = {
         app.post(
             {
                 act_id: "activate_license",
-                user: {
-                    userEmail : "menikupfer@gmail.com",
-                    userCode : "123456"
-                },
+                user: app.dat.user,
                 license : {
                     LicenseID : app.dat.license.LicenseID,
                     activate_station : station,
@@ -430,10 +473,7 @@ var app = {
         app.post(
             {
                 act_id: "get_license",
-                user: {
-                    userEmail : "menikupfer@gmail.com",
-                    userCode : "123456"
-                },
+                user: app.dat.user,
                 license : {
                     LicenseID : licID
                 }
@@ -525,10 +565,7 @@ var app = {
             app.post(
                 {
                     act_id: "extend_license",
-                    user: {
-                        userEmail : "menikupfer@gmail.com",
-                        userCode : "123456"
-                    },
+                    user: app.dat.user,
                     license : {
                         LicenseID : app.dat.license.LicenseID,
                         NewExpiryDate : newExpiryDate
@@ -553,10 +590,7 @@ var app = {
             app.post(
                 {
                     act_id: "extend_package",
-                    user: {
-                        userEmail : "menikupfer@gmail.com",
-                        userCode : "123456"
-                    },
+                    user: app.dat.user,
                     license : {
                         LicenseID : app.dat.license.LicenseID,
                         PackageAddition : packageAddition
@@ -593,10 +627,7 @@ var app = {
         app.post(
             {
                 act_id: "add_license",
-                user: {
-                    userEmail : "menikupfer@gmail.com",
-                    userCode : "123456"
-                },
+                user: app.dat.user,
                 license : {
                     LicenseID : app.dat.license.LicenseID,
                     CustomerName : CustomerName,

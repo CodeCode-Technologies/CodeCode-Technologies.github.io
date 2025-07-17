@@ -213,6 +213,14 @@ body{
     text-align: center;
 }
 
+#eb_otp {
+    font-size: 2em;
+    margin: 1rem 0;
+    text-align: center;
+    width: 60%;
+    box-sizing: border-box;
+}
+
 .upPage {
     align-items: center;
     flex-direction: column;
