@@ -68,6 +68,16 @@ var js = {
             if (keyValuesA[i] !== keyValuesB[i]) return false; 
         }
         return true;
+    },
+    strToDate : (dateStr)=> {
+        const [day, month, year] = dateStr.split('/').map(num => parseInt(num));
+        return new Date(year, month - 1, day);
+    },
+    dateToStr : (date)=> {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
     }
 }
 
@@ -100,13 +110,30 @@ var app = {
         var mail = `https://mail.google.com/mail/?view=cm&fs=1&body=${encodeURIComponent("An error has occurred at " + new Date() + "\n" + msg)}&to=codecode-technologies@gmail.com`;
         app.pop_err(`תקלה בביצוע הפעולה<div class="error_code">${mtml_msg}<div><a href="${mail}" target="_blank">Send</a></div></div>`, true);
     },
-    pop_are_you_sure:(msg, on_yes, title)=>{
+    pop_ask:(msg, on_yes, title)=>{
         swal.ok = false;
         swal({
             title: title || 'רגע...',
             html: msg,
             showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'כן', cancelButtonText: 'לא',
             onAfterClose:()=>{if (swal.ok) on_yes?.call();}
+        }).then(function(result){
+            if (result.dismiss) return;
+            swal.ok = true;
+        });
+    },
+    pop_form:(msg, on_yes, on_validate, title)=>{
+        swal.ok = false;
+        swal({
+            title: title || 'פרטים למילוי',
+            html: msg,
+            showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'אישור', cancelButtonText: 'ביטול',
+            onAfterClose:()=>{if (swal.ok) on_yes?.call();},
+            preConfirm: function() {return new Promise(function(resolve) {
+                const validate_msg = on_validate?.call();
+                if (validate_msg && (validate_msg!='')) swal.showValidationError(validate_msg);
+                resolve();
+            })}
         }).then(function(result){
             if (result.dismiss) return;
             swal.ok = true;
@@ -210,6 +237,20 @@ var app = {
                 $("#eb_deactivate_code").val('');
             },
             invalid :()=> !app.dat.user || !app.dat.license
+        },
+        change_account: {
+            before_show:()=>{
+                app.fill_lic_info("change_account");
+            },
+            invalid :()=> !app.dat.user || !app.dat.license
+        },
+        new_account: {
+            before_show:()=>{
+                app.fill_lic_info("new_account");
+                $("#eb_new_account_CustomerName").val('');
+                $("#eeb_new_account_Package").val('');
+            },
+            invalid :()=> !app.dat.user || !app.dat.license
         }
     },
     navigator:{
@@ -277,7 +318,7 @@ var app = {
                 },
                 on_error_response:(error)=>{
                       app.pop_err(error.msg);
-                 }
+                }
             }
         );
     },
@@ -309,7 +350,7 @@ var app = {
                 },
                 on_error_response:(error)=>{
                       app.pop_err(error.msg);
-                 }
+                }
             }
         );
     },
@@ -360,15 +401,15 @@ var app = {
             {
                 on_success:(response)=>{
                    app.dat.license = response;
-                    var msg = 'הפעולה עברה בהצלחה';
+                    var msg = 'הפעולה הסתיימה בהצלחה';
                     if (!deactivate) msg += `<div>סיסמת הפעלה: <div id="activate_pwd">${app.dat.license.pwd}</div></div>`;
                     app.pop_success(msg);
                     history.back();
                     console.log(response);
                 },
                 on_error_response:(error)=>{
-                      app.pop_err(error.msg);
-                 }
+                    app.pop_err(error.msg);
+                }
             }
         );
     },
@@ -400,13 +441,19 @@ var app = {
             {
                 on_success:(response)=>{
                     app.dat.license = response;
-                    app.fill_lic_info("change_account")
                     app.navigator.navigateTo("change_account");
                     console.log(response);
                 },
                 on_error_response:(error)=>{
-                      app.pop_err(error.msg);
-                 }
+                    if (error.code == 5) {
+                        app.pop_ask(`לא נמצאה עסקה לחשבון <b>${licID}</b><br>האם ליצור עסקה חדשה?`, ()=>{
+                            app.dat.license = {
+                                LicenseID : licID
+                            };
+                            app.navigator.navigateTo("new_account");
+                        }, 'עסקה חדשה');
+                    } else app.pop_err(error.msg);
+                }
             }
         );
     },
@@ -471,9 +518,102 @@ var app = {
         }
     },
     extend_expiry : ()=>{
-        app.pop_are_you_sure('הפעולה תאריך את התוקף בשנה נוספת, עד --<br>להמשיך?');
+        const d = js.strToDate(app.dat.license.Expire);
+        d.setFullYear(d.getFullYear() + 1);
+        const newExpiryDate = js.dateToStr(d);
+        app.pop_ask(`הפעולה תאריך את התוקף בשנה נוספת, <br>עד <b>${newExpiryDate}</b><br>להמשיך?`, ()=>{
+            app.post(
+                {
+                    act_id: "extend_license",
+                    user: {
+                        userEmail : "menikupfer@gmail.com",
+                        userCode : "123456"
+                    },
+                    license : {
+                        LicenseID : app.dat.license.LicenseID,
+                        NewExpiryDate : newExpiryDate
+                    }
+                },
+                {
+                    on_success:(response)=>{
+                        app.pop_success('הפעולה הסתיימה בהצלחה');
+                        history.back();
+                    },                
+                    on_error_response:(error)=>{
+                        app.pop_err(error.msg);
+                    }
+                }
+            );
+        });
     },
     extend_package : ()=>{
+        const html = `כרגע בחבילה <b>${app.dat.license.Package}</b> רשיונות<br>בחר כמה רשיונות להוסיף?<input type=number min="1" max="9999" id=eb_extend_package_qty>`;
+        var packageAddition = 0;
+        app.pop_form(html,()=>{
+            app.post(
+                {
+                    act_id: "extend_package",
+                    user: {
+                        userEmail : "menikupfer@gmail.com",
+                        userCode : "123456"
+                    },
+                    license : {
+                        LicenseID : app.dat.license.LicenseID,
+                        PackageAddition : packageAddition
+                    }
+                },
+                {
+                    on_success:(response)=>{
+                        app.pop_success('הפעולה הסתיימה בהצלחה');
+                        history.back();
+                    },                
+                    on_error_response:(error)=>{
+                        app.pop_err(error.msg);
+                    }
+                }
+            );
+        },
+        ()=>{
+            packageAddition = parseInt($("#eb_extend_package_qty").val());
+            if (!packageAddition || packageAddition<1) return "נא למלא כמות רשיונות";
+        },
+        'הגדלת חבילת רשיונות');
+    },
+    new_account:()=>{
+        const CustomerName = $("#eb_new_account_CustomerName").val().trim();
+        if (!CustomerName || CustomerName == '') {
+            app.pop_err('נא למלא שם לקוח');
+            return;
+        }
+        const Package = parseInt($("#eb_new_account_Package").val().trim());
+        if (!Package || Package < 1) {
+            app.pop_err('נא למלא חבילת רשיונות');
+            return;
+        }
+        app.post(
+            {
+                act_id: "add_license",
+                user: {
+                    userEmail : "menikupfer@gmail.com",
+                    userCode : "123456"
+                },
+                license : {
+                    LicenseID : app.dat.license.LicenseID,
+                    CustomerName : CustomerName,
+                    Package: Package
+                }
+            },
+            {
+                on_success:(response)=>{
+                    app.pop_success('הפעולה הסתיימה בהצלחה');
+                    history.back();
+                },                
+                on_error_response:(error)=>{
+                    app.pop_err(error.msg);
+                }
+            }
+        );
+
 
     },
     init_buttons: ()=>{
@@ -490,7 +630,8 @@ var app = {
         $("#bt_QR_deactivate").click(app.QR_activate);
         $("#mi_account_add").click(app.open_account);
         $("#bt_extend_expiry").click(app.extend_expiry);
-        $("#bt_extend_package").click(app.extend_packge);
+        $("#bt_extend_package").click(app.extend_package);
+        $("#bt_new_account").click(app.new_account);
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");

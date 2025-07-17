@@ -140,20 +140,19 @@
             <div id="info_new_account_LicenseID" class="info-cell-value">123456</div>
         </div>
         <div class="info-cell-container">
-            <div class="info-cell-title">שם לקוח:</div>
-            <div id="info_new_account_CustomerName" class="info-cell-value">אלכסנדר בוחבוט</div>
+            <div class="info-cell-title">שם לקוח:&nbsp;&nbsp;</div>
+            <div id="info_new_account_CustomerName" class="info-cell-value">
+                <input class="eb_cell" type="text" id="eb_new_account_CustomerName">
+            </div>
         </div>
         <div class="info-cell-container">
             <div class="info-cell-title">חבילת רשיונות:</div>
-            <div id="info_new_account_Package" class="info-cell-value">120</div>
+            <div id="info_new_account_Package" class="info-cell-value">
+                <input class="eb_cell" type="number" min="1" max="9999" id="eb_new_account_Package">
+            </div>
         </div>
-        <div class="info-cell-container">
-            <div class="info-cell-title">רשיונות פעילים:</div>
-            <div id="info_new_account_Activated" class="info-cell-value">20</div>
-        </div>
-        <div class="info-cell-container">
-            <div class="info-cell-title">בתוקף עד:</div>
-            <div id="info_new_account_Expire" class="info-cell-value">12/10/20205</div>
+        <div>
+            <input id="bt_new_account" class="bt_form_act" type="button" value="עסקה חדש">
         </div>
     </div>    
     <div id="change_account" class="page upPage">
