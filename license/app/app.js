@@ -408,7 +408,11 @@ var app = {
             app.pop_err('נא למלא מס\' תחנה');
             return;
         }
-        var qty = parseInt($("#eb_deactivate_qty").val().trim());
+ 
+        var qty = (deactivate)?
+            parseInt($("#eb_deactivate_qty").val().trim()) :
+            parseInt($("#eb_activate_qty").val().trim());
+            
         if (qty == null || isNaN(qty) || qty < 0) {
             app.pop_err(`נא למלא מס\' רשיונות ל${(deactivate)?'זיכוי':'הפעלה'}`);
             return;
