@@ -202,6 +202,11 @@ body{
     margin: 1rem;
 }
 
+#bt_new_account, #bt_new_test_account {
+    width: 10rem;
+    margin: 0.5rem;
+}
+
 #bt_extend_expiry, #bt_extend_package {
     width: 10rem;
     margin: 1rem;

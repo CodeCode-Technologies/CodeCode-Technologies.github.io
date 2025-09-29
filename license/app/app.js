@@ -617,7 +617,7 @@ var app = {
         },
         'הגדלת חבילת רשיונות');
     },
-    new_account:()=>{
+    new_account:(test_mode)=>{
         const CustomerName = $("#eb_new_account_CustomerName").val().trim();
         if (!CustomerName || CustomerName == '') {
             app.pop_err('נא למלא שם לקוח');
@@ -635,7 +635,8 @@ var app = {
                 license : {
                     LicenseID : app.dat.license.LicenseID,
                     CustomerName : CustomerName,
-                    Package: Package
+                    Package: Package,
+                    test_mode: test_mode
                 }
             },
             {
@@ -666,7 +667,8 @@ var app = {
         $("#mi_account_add").click(app.open_account);
         $("#bt_extend_expiry").click(app.extend_expiry);
         $("#bt_extend_package").click(app.extend_package);
-        $("#bt_new_account").click(app.new_account);
+        $("#bt_new_account").click(()=>{app.new_account(false)});
+        $("#bt_new_test_account").click(()=>{app.new_account(true)});
     },
     init_user: ()=>{
         app.dat.user = window.localStorage.getObj("license-user");
