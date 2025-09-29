@@ -609,7 +609,7 @@ var app = {
         },
         ()=>{
             packageAddition = parseInt($("#eb_extend_package_qty").val());
-            if (!packageAddition || packageAddition<1) return "נא למלא כמות רשיונות";
+            if (!packageAddition || packageAddition<0) return "נא למלא כמות רשיונות";
         },
         'הגדלת חבילת רשיונות');
     },

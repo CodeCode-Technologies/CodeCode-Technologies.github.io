@@ -825,3 +825,9 @@ body{
     background-position: center;
     background-size: 40%;
 }
+
+.code-display {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.5em;
+    letter-spacing: 0.05em; /* small spacing helps readability */
+}
