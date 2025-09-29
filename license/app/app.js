@@ -408,13 +408,13 @@ var app = {
             app.pop_err('נא למלא מס\' תחנה');
             return;
         }
-        const qty = (deactivate)?
-            - parseInt($("#eb_deactivate_qty").val().trim()) :
-            parseInt($("#eb_activate_qty").val().trim());
-        if (qty == null || isNaN(qty)) {
-            app.pop_err('נא למלא מס\' רשיונות להפעלה');
+        var qty = parseInt($("#eb_deactivate_qty").val().trim());
+        if (qty == null || isNaN(qty) || qty < 0) {
+            app.pop_err(`נא למלא מס\' רשיונות ל${(deactivate)?'זיכוי':'הפעלה'}`);
             return;
         }
+        if (deactivate && qty>0) qty = -qty;
+
         const code = ((deactivate)) ?
             $("#eb_deactivate_code").val().trim() :
             $("#eb_activate_code").val().trim();
