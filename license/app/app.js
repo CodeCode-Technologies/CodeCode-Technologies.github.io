@@ -411,7 +411,7 @@ var app = {
         const qty = (deactivate)?
             - parseInt($("#eb_deactivate_qty").val().trim()) :
             parseInt($("#eb_activate_qty").val().trim());
-        if (qty == null || !isNaN(qty)) {
+        if (qty == null || isNaN(qty)) {
             app.pop_err('נא למלא מס\' רשיונות להפעלה');
             return;
         }
